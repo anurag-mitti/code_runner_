@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:latest
+    container_name: code-runner-redis
+    ports:
+      - "6379:6379"
+
+  api:
+    build:
+      context: ./api
+    container_name: code-runner-api
+    depends_on:
+      - redis
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    ports:
+      - "3000:3000"
+
+  worker:
+    build:
+      context: ./worker
+    container_name: code-runner-worker
+    depends_on:
+      - redis
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
